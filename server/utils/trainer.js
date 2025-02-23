@@ -42,7 +42,7 @@ export const findTrainer = async (name) => {
     }),
   );
   const trainer = JSON.parse(await streamToString(object.Body));
-  //console.log("findTrainer=:", trainer); // 取得したデータを確認
+  //console.log("findTrainer=:", trainer); // 取得したデータを確認(sy2025)
   return trainer;
 };
 
@@ -56,7 +56,7 @@ export const upsertTrainer = async (name, trainer) => {
       Body: JSON.stringify({ name: name, pokemons: [], ...trainer }), //トレーナー名が消えてしまう問題を修正(sy2025)
     }),
   );
-  console.log("trainerName:", name); // 取得したデータを確認(sy2025)
+  //console.log("trainerName:", name); // 取得したデータを確認(sy2025)
   return result;
 };
 

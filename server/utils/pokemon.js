@@ -8,7 +8,7 @@ export const findPokemon = async (name) => {
     const pokemon = await ofetch(`https://pokeapi.co/api/v2/pokemon/${name}`, {
       agent,
     });
-    console.log("Fetched Pokemon:", pokemon); // 取得したデータを確認
+    //console.log("Fetched Pokemon:", pokemon); // 取得したデータを確認(sy2025)
     return pokemon;
   } catch (error) {
     console.error("Fetch Error:", error); // エラーを詳細に確認
