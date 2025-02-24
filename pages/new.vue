@@ -19,11 +19,18 @@ const onSubmit = async () => {
   router.push(`/trainer/${safeTrainerName.value}`);
 };
 const { dialog, onOpen, onClose } = useDialog();
+const goHome = () => {
+  router.push("..");
+}; //ホーム画面へ戻る　sy2025
 </script>
 
 <template>
   <div>
     <h1>あたらしくはじめる</h1>
+    <!--やめるボタンを追加　sy2025-->
+    <GamifyButton type="button" @click="goHome">
+    やめる
+    </GamifyButton>
     <p>はじめに　きみの　なまえを　おしえてもらおう！</p>
     <form @submit.prevent>
       <div class="item">
@@ -38,9 +45,13 @@ const { dialog, onOpen, onClose } = useDialog();
           @keydown.enter="valid && onOpen(true)"
         />
       </div>
-      <GamifyButton type="button" :disabled="!valid" @click="onOpen(true)">
-        けってい
-      </GamifyButton>
+      <GamifyList :border="false" direction="horizon">
+        <GamifyItem>
+          <GamifyButton type="button" :disabled="!valid" @click="onOpen(true)">
+          けってい
+          </GamifyButton>
+        </GamifyItem>
+      </GamifyList>
       <GamifyDialog
       v-if="dialog"
       id="confirm-submit"

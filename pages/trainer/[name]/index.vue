@@ -83,6 +83,8 @@ const {
       <GamifyItem v-for="pokemon in trainer.pokemons" :key="pokemon.id">
         <img :src="pokemon.sprites.front_default" />
         <span class="pokemon-name">{{ pokemon.nickname || pokemon.name }}</span>
+        <!--タイプを追加 sy2025 -->
+        <span class="pokemon-types">{{ pokemon.typeName }}</span>
         <GamifyButton @click="onOpenNickname(pokemon)"
           >ニックネームをつける</GamifyButton
         >

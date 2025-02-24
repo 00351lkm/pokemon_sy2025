@@ -29,4 +29,14 @@
   width: 10em;
   display: inline-block;
 }
+
+.gamify-item :deep(.pokemon-types) {
+  width: 15em;
+  display: inline-block;
+}
+
+.gamify-item :deep(.trainer-name) {
+  width: 15em;
+  display: inline-block;
+}
 </style>

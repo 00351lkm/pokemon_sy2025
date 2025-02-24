@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findTrainers, upsertTrainer } from "~/server/utils/trainer";
+import { findTrainers, upsertTrainer, deleteTrainer } from "~/server/utils/trainer";
 import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
@@ -39,6 +39,27 @@ router.post("/trainer", async (req, res, next) => {
   }
 });
 
+/** トレーナーの削除 */
+// TODO: トレーナーを削除する API エンドポイントの実装
+router.delete("/trainer", async (req, res, next) => {
+  try {
+    // リクエストボディにトレーナー名が含まれていなければ400を返す
+    if (!("name" in req.body && req.body.name.length > 0))
+      return res.sendStatus(400);
+
+    const { trainerName } = req.params;
+    // TODO: トレーナーが存在していなければ404を返す
+    const trainer = await findTrainer(trainerName);
+    if (!trainer.some(({ Key }) => Key === `${req.body.name}.json`))
+      return res.sendStatus(409);
+
+    const result = await deleteTrainer(trainerName);
+    res.status(result["$metadata"].httpStatusCode).send(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /** トレーナーの取得 */
 // TODO: トレーナーを取得する API エンドポイントの実装
 router.get("/trainer/:trainerName", async (req, res, next) => {
@@ -55,17 +76,14 @@ router.get("/trainer/:trainerName", async (req, res, next) => {
 /** トレーナーの更新 */
 router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
-    const { trainerName } = req.params;
     // TODO: トレーナーが存在していなければ404を返す
+    const { trainerName } = req.params;
     const result = await upsertTrainer(trainerName, req.body);
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
     next(err);
   }
 });
-
-/** トレーナーの削除 */
-// TODO: トレーナーを削除する API エンドポイントの実装
 
 /** ポケモンの追加 */
 router.post("/trainer/:trainerName/pokemon", async (req, res, next) => {
@@ -77,7 +95,9 @@ router.post("/trainer/:trainerName/pokemon", async (req, res, next) => {
       return res.sendStatus(400);
 
     // TODO: 削除系 API エンドポイントを利用しないかぎりポケモンは保持する
+    // ポケモンリストに「タイプ」を追加 sy2025
     const pokemon = await findPokemon(req.body.name);
+    const typeName = pokemon.types.map(typeInfo => typeInfo.type.name).join(',');
     const {
       order,
       name,
@@ -88,6 +108,7 @@ router.post("/trainer/:trainerName/pokemon", async (req, res, next) => {
       nickname: "",
       order,
       name,
+      typeName,
       sprites: { front_default },
     });
     const result = await upsertTrainer(trainerName, trainer);
