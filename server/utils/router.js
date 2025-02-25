@@ -47,15 +47,17 @@ router.delete("/trainer", async (req, res, next) => {
     if (!("name" in req.body && req.body.name.length > 0))
       return res.sendStatus(400);
 
-    const { trainerName } = req.params;
+    //ここから
+    const trainers = await findTrainers();
     // TODO: トレーナーが存在していなければ404を返す
-    const trainer = await findTrainer(trainerName);
-    if (!trainer.some(({ Key }) => Key === `${req.body.name}.json`))
-      return res.sendStatus(409);
+    if (!(trainers.some(({ Key }) => Key === `${req.body.name}.json`)))
+      return res.sendStatus(404);
 
-    const result = await deleteTrainer(trainerName);
+    const result = await deleteTrainer(req.body.name);
+    //console.log('deleteTrainer result=:', result);//ログ出力 sy2025
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
+    //console.error('Error deleting trainer:', err);//ログ出力 sy2025
     next(err);
   }
 });
@@ -77,6 +79,10 @@ router.get("/trainer/:trainerName", async (req, res, next) => {
 router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
     // TODO: トレーナーが存在していなければ404を返す
+    const trainers = await findTrainers();
+    if (!(trainers.some(({ Key }) => Key === `${req.params}.json`)))
+      return res.sendStatus(404);
+
     const { trainerName } = req.params;
     const result = await upsertTrainer(trainerName, req.body);
     res.status(result["$metadata"].httpStatusCode).send(result);

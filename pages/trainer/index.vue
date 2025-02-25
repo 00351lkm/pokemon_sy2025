@@ -15,9 +15,9 @@ const onDelete = async (trainer) => {
     },
   }).catch((e) => e);
   if (response instanceof Error) return;
-  router.push("/trainer");
+  await useTrainers();
+  onClose();
 };
-
 const { dialog, onOpen, onClose } = useDialog();
 </script>
 
