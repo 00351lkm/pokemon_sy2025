@@ -1,10 +1,11 @@
 <script setup>
 const router = useRouter();
 const config = useRuntimeConfig();
-const { data: trainers } = await useTrainers();
+const { data: trainers, refresh } = await useTrainers();
+//やめるボタンを追加 sy2025
 const goHome = () => {
   router.push("..");
-}; //ホーム画面へ戻る sy2025
+};
 //トレーナーの削除ボタンを追加 sy2025
 const onDelete = async (trainer) => {
   const response = await $fetch(`/api/trainer`, {
@@ -15,7 +16,7 @@ const onDelete = async (trainer) => {
     },
   }).catch((e) => e);
   if (response instanceof Error) return;
-  await useTrainers();
+  await refresh();
   onClose();
 };
 const { dialog, onOpen, onClose } = useDialog();

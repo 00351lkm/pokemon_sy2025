@@ -129,9 +129,7 @@ const {
           <GamifyButton @click="onCloseNickname">キャンセル</GamifyButton>
         </GamifyItem>
         <GamifyItem>
-          <GamifyButton @click="onNickname(nicknameDialog)"
-            >けってい</GamifyButton
-          >
+          <GamifyButton @click="onNickname(nicknameDialog)">けってい</GamifyButton>
         </GamifyItem>
       </GamifyList>
     </GamifyDialog>

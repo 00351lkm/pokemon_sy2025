@@ -47,7 +47,6 @@ router.delete("/trainer", async (req, res, next) => {
     if (!("name" in req.body && req.body.name.length > 0))
       return res.sendStatus(400);
 
-    //ここから
     const trainers = await findTrainers();
     // TODO: トレーナーが存在していなければ404を返す
     if (!(trainers.some(({ Key }) => Key === `${req.body.name}.json`)))
@@ -80,13 +79,15 @@ router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
     // TODO: トレーナーが存在していなければ404を返す
     const trainers = await findTrainers();
-    if (!(trainers.some(({ Key }) => Key === `${req.params}.json`)))
+    if (!(trainers.some(({ Key }) => Key === `${req.params.trainerName}.json`)))
       return res.sendStatus(404);
 
     const { trainerName } = req.params;
     const result = await upsertTrainer(trainerName, req.body);
+    //console.log("upsertTrainer=:", result); // トレーナー情報の更新結果を確認(sy2025)
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
+    //console.error("upsertTrainer=:", err); // トレーナー情報の更新結果(err)を確認(sy2025)
     next(err);
   }
 });
@@ -126,5 +127,24 @@ router.post("/trainer/:trainerName/pokemon", async (req, res, next) => {
 
 /** ポケモンの削除 */
 // TODO: ポケモンを削除する API エンドポイントの実装
+router.delete("/trainer/:trainerName/pokemon/:pokemonId", async (req, res, next) => {
+  try {
+    const { trainerName } = req.params;
+    const trainer = await findTrainer(trainerName);
+
+    // トレーナー情報にポケモンIDが存在していなければ404を返す
+    if (!(trainer.pokemons.some(({ id }) => id === Number(req.params.pokemonId))))
+      return res.sendStatus(404);
+
+    // ルートパラメタで取得したpokemonIdと一致するポケモンを除外する
+    trainer.pokemons = trainer.pokemons.filter(pokemon => pokemon.id !== Number(req.params.pokemonId));
+
+    const result = await upsertTrainer(trainerName, trainer);
+    res.status(result["$metadata"].httpStatusCode).send(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 export default router;
